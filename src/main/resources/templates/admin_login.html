@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Administration - GameHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Rajdhani', sans-serif; background: #000000; color: #e4e4e7; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; }
+
+        .login-card {
+            background: rgba(9, 9, 11, 0.9); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px;
+            padding: 3rem; width: 100%; max-width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 15px rgba(168, 85, 247, 0.1);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .login-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #a855f7, #06b6d4);
+        }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; color: #a855f7; letter-spacing: 2px; text-decoration: none; display: block; margin-bottom: 0.5rem; text-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
+        .logo span { color: #06b6d4; text-shadow: 0 0 15px rgba(6, 182, 212, 0.5); }
+        .title { font-size: 1.1rem; color: #a1a1aa; margin-bottom: 2.5rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        label { display: block; font-size: 0.9rem; color: #a1a1aa; margin-bottom: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        input {
+            width: 100%; padding: 1rem; background: #000; border: 1px solid #27272a;
+            border-radius: 4px; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 1rem;
+            transition: all 0.3s;
+        }
+        input:focus { border-color: #a855f7; outline: none; box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.2), 0 0 10px rgba(168, 85, 247, 0.2); }
+
+        .error-msg { background: rgba(239, 68, 68, 0.1); color: #f87171; font-size: 0.9rem; padding: 0.8rem; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3); margin-bottom: 1.5rem; text-align: center; }
+
+        .btn-submit {
+            width: 100%; padding: 1rem; background: rgba(168, 85, 247, 0.1); color: #fff; border: 1px solid #a855f7;
+            border-radius: 4px; font-weight: 700; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            transition: all 0.3s; font-family: 'Rajdhani', sans-serif; margin-top: 1rem; box-shadow: 0 0 10px rgba(168,85,247,0.2);
+        }
+        .btn-submit:hover { background: #a855f7; transform: translateY(-2px); box-shadow: 0 0 20px rgba(168,85,247,0.6); }
+
+        .back-link { display: inline-block; margin-top: 2rem; color: #52525b; text-decoration: none; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; transition: color 0.3s; }
+        .back-link:hover { color: #06b6d4; text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <a href="/" class="logo">Game<span>Hub</span></a>
+    <p class="title">System Login</p>
+
+    <!-- Message d'erreur -->
+    <div class="error-msg" th:if="${error != null}" th:text="${error}"></div>
+
+    <form action="/admin/login" method="POST">
+        <div class="form-group">
+            <label for="email">Admin ID</label>
+            <input type="email" id="email" name="email" required autofocus placeholder="admin@gamehub.com">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Initialize</button>
+    </form>
+
+    <a href="/" class="back-link">← Retour Interface Utilisateur</a>
+</div>
+
+</body>
+</html>
