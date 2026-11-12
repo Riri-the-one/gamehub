@@ -1,6 +1,7 @@
 package com.example.miniecommerce.entities;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +17,16 @@ public class LigneCommandes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer quantite;
-    private Double prixUnitaire;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal prixUnitaire;
 
     @ManyToOne
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private Produits produit;
 
     @ManyToOne
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private Commandes commandes;
 }

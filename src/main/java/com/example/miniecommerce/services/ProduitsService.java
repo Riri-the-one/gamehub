@@ -1,8 +1,8 @@
 package com.example.miniecommerce.services;
 
 import com.example.miniecommerce.entities.Produits;
-import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ProduitsService {

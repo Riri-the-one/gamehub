@@ -1,20 +1,19 @@
 package com.example.miniecommerce.controllers;
 
 import com.example.miniecommerce.entities.Produits;
-import com.example.miniecommerce.entities.Utilisateurs;
 import com.example.miniecommerce.services.CategoriesService;
 import com.example.miniecommerce.services.ProduitsService;
 import com.example.miniecommerce.services.UtilisateurService;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -48,7 +47,7 @@ public class ProduitsController {
         return "CreateProduits";
     }
 
-    @RequestMapping("/saveProduits")
+    @PostMapping("/saveProduits")
     public String saveProduits(@ModelAttribute("produits") Produits produits) {
         produitsService.saveProduits(produits);
         return "CreateProduits";
@@ -61,7 +60,7 @@ public class ProduitsController {
         return "ProduitsList";
     }
 
-    @RequestMapping("/deleteProduits")
+    @PostMapping("/deleteProduits")
     public String deleteProduits(@RequestParam("id") Long id, ModelMap modelMap) {
         produitsService.deleteProduits(id);
         List<Produits> produits = produitsService.getAllProduits();
@@ -76,7 +75,7 @@ public class ProduitsController {
         return "EditProduits";
     }
 
-    @RequestMapping("/updateProduits")
+    @PostMapping("/updateProduits")
     public String updateProduits(@ModelAttribute("produits") Produits produits) {
         produitsService.updateProduits(produits);
         return "CreateProduits";

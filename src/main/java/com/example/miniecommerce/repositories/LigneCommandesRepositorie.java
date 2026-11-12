@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LigneCommandesRepositorie extends JpaRepository<LigneCommandes, Long> {
+    boolean existsByProduit_Id(Long produitId);
 }

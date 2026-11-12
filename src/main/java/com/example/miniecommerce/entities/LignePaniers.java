@@ -18,8 +18,12 @@ public class LignePaniers {
     private Integer quantite;
 
     @ManyToOne
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private Paniers paniers;
 
     @ManyToOne
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private Produits produits;
 }

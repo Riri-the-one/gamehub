@@ -43,6 +43,7 @@
         .back-link { display: inline-block; margin-top: 2rem; color: #52525b; text-decoration: none; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; transition: color 0.3s; }
         .back-link:hover { color: #06b6d4; text-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 <body>
 
@@ -51,9 +52,9 @@
     <p class="title">System Login</p>
 
     <!-- Message d'erreur -->
-    <div class="error-msg" th:if="${error != null}" th:text="${error}"></div>
+    <div class="error-msg" th:if="${param.error != null}" th:text="'Identifiants incorrects ou accès désactivé.'"></div>
 
-    <form action="/admin/login" method="POST">
+    <form th:action="@{/admin/login}" method="POST">
         <div class="form-group">
             <label for="email">Admin ID</label>
             <input type="email" id="email" name="email" required autofocus placeholder="admin@gamehub.com">

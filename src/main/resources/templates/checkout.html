@@ -67,6 +67,7 @@
         footer { border-top: 1px solid #27272a; background: #09090b; text-align: center; padding: 2.5rem; color: #52525b; font-size: 0.95rem; }
         footer span { color: #a855f7; font-weight: 700; font-family: 'Orbitron', sans-serif; }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 <body>
 
@@ -90,6 +91,7 @@
         <div class="form-card">
             <h2>Informations de Livraison</h2>
             <form th:action="@{/commander}" method="post">
+                <input type="hidden" name="checkoutToken" th:value="${checkoutToken}">
 
                 <div class="form-row">
                     <div class="form-group">
@@ -146,7 +148,7 @@
 </div>
 
 <footer>
-    <p>ZAINAB & ARIJ © 2026 <span>GameHub</span> — Revendeur officiel</p></footer>
+    <p>ZAINAB & ARIJ © 2026 <span>GameHub</span> — Projet pédagogique</p></footer>
 
 </body>
 </html>

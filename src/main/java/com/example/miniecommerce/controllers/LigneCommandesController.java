@@ -2,14 +2,14 @@ package com.example.miniecommerce.controllers;
 
 import com.example.miniecommerce.entities.LigneCommandes;
 import com.example.miniecommerce.services.LigneCommandesService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -21,7 +21,7 @@ public class LigneCommandesController {
         return "CreateLigneCommandes";
     }
 
-    @RequestMapping("/saveLigneCommandes")
+    @PostMapping("/saveLigneCommandes")
     public String saveLigneCommandes(@ModelAttribute("ligneCommandes") LigneCommandes ligneCommandes) {
         ligneCommandesService.saveLigneCommandes(ligneCommandes);
         return "CreateLigneCommandes";
@@ -34,7 +34,7 @@ public class LigneCommandesController {
         return "LigneCommandesList";
     }
 
-    @RequestMapping("/deleteLigneCommandes")
+    @PostMapping("/deleteLigneCommandes")
     public String deleteLigneCommandes(@RequestParam("id") Long id, ModelMap modelMap) {
         ligneCommandesService.deleteLigneCommandes(id);
         List<LigneCommandes> ligneCommandes = ligneCommandesService.getAllLigneCommandes();
@@ -49,7 +49,7 @@ public class LigneCommandesController {
         return "EditLigneCommandes";
     }
 
-    @RequestMapping("/updateLigneCommandes")
+    @PostMapping("/updateLigneCommandes")
     public String updateLigneCommandes(@ModelAttribute("ligneCommandes") LigneCommandes ligneCommandes) {
         ligneCommandesService.updateLigneCommandes(ligneCommandes);
         return "CreateLigneCommandes";

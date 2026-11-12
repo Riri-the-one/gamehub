@@ -75,6 +75,7 @@
         footer { border-top: 1px solid #27272a; background: #09090b; text-align: center; padding: 2.5rem; color: #52525b; font-size: 0.95rem; margin-top: auto; }
         footer span { color: #a855f7; font-weight: 700; font-family: 'Orbitron', sans-serif; }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 <body>
 
@@ -89,12 +90,9 @@
 
 <div class="main">
     <div class="confirmation">
-        <div class="check-circle">✓</div>
-        <h1>Commande <span>Validée</span> !</h1>
-        <p class="sub">
-            Transaction réussie. Votre équipement gaming est en cours de préparation<br>
-            et sera livré à votre adresse dans les meilleurs délais.
-        </p>
+        <div class="check-circle" th:text="${paid ? '✓' : '…'}">…</div>
+        <h1><span th:text="${confirmationTitle}">État de la commande</span></h1>
+        <p class="sub" th:text="${confirmationMessage}">État actuel de la commande.</p>
 
         <div class="order-card">
             <h3>Détails de la Commande</h3>
@@ -108,7 +106,7 @@
             </div>
             <div class="order-row">
                 <span>Statut</span>
-                <span style="color: #fbbf24; font-size: 0.95rem;">⏳ En cours de traitement</span>
+                <span style="color: #fbbf24; font-size: 0.95rem;" th:text="${confirmationState}">Statut</span>
             </div>
             <div class="order-row total-row">
                 <span>Montant Total</span>
@@ -124,7 +122,7 @@
 </div>
 
 <footer>
-    <p>ZAINAB & ARIJ © 2026 <span>GameHub</span> — Revendeur officiel</p></footer>
+    <p>ZAINAB & ARIJ © 2026 <span>GameHub</span> — Projet pédagogique</p></footer>
 
 </body>
 </html>

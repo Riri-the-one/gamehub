@@ -1,18 +1,24 @@
 package com.example.miniecommerce.services.impl;
 
+import com.example.miniecommerce.entities.LignePaniers;
 import com.example.miniecommerce.entities.Paniers;
 import com.example.miniecommerce.entities.Utilisateurs;
-import com.example.miniecommerce.entities.LignePaniers;
+import com.example.miniecommerce.enums.UtilisateurRoleEnum;
 import com.example.miniecommerce.repositories.LignePaniersRepositorie;
 import com.example.miniecommerce.repositories.PaniersRepositorie;
+import com.example.miniecommerce.repositories.ProduitsRepositorie;
 import com.example.miniecommerce.repositories.UtilisateursRepositorie;
+import com.example.miniecommerce.services.Money;
 import com.example.miniecommerce.services.PaniersService;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @AllArgsConstructor
@@ -21,6 +27,8 @@ public class PaniersServiceImpl implements PaniersService {
     private PaniersRepositorie paniersRepositorie;
     private UtilisateursRepositorie utilisateursRepositorie;
     private LignePaniersRepositorie lignePaniersRepositorie;
+    private ProduitsRepositorie produitsRepositorie;
+    public static final int MAX_QUANTITY = 99;
 
     @Override
     public Paniers savePaniers(Paniers paniers) {
@@ -53,45 +61,80 @@ public class PaniersServiceImpl implements PaniersService {
     }
 
     @Override
+    @Transactional
     public Paniers getOrCreatePanierForUtilisateur(Long utilisateurId) {
-        Utilisateurs user = utilisateursRepositorie.findById(utilisateurId).orElse(null);
-        if (user == null) {
-            return null;
-        }
-
-        Paniers panier = null;
-        for (Paniers p : paniersRepositorie.findAll()) {
-            if (p.getUtilisateurs() != null && p.getUtilisateurs().getId().equals(utilisateurId)) {
-                panier = p;
-                break;
-            }
-        }
-
-        if (panier == null) {
-            panier = new Paniers();
-            panier.setDate(new Date());
-            panier.setUtilisateurs(user);
-            panier.setLignePaniers(new ArrayList<>());
-            panier = paniersRepositorie.save(panier);
-        }
-
+        Paniers panier = lockedCart(utilisateurId);
+        // Materialize the owner-scoped lines while the cart is locked.
+        panier.getLignePaniers().size();
         return panier;
     }
 
+    private Paniers lockedCart(Long utilisateurId) {
+        Utilisateurs user = utilisateursRepositorie.findLockedById(utilisateurId)
+                .filter(u -> u.getUtilisateurRole() == UtilisateurRoleEnum.Client)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // Lock the existing owner row even before the first cart exists. All guest
+        // writers take this same lock, so creation and line merges are serialized.
+        return paniersRepositorie.findByUtilisateurs_Id(utilisateurId).orElseGet(() -> {
+            Paniers cart = new Paniers();
+            cart.setDate(new Date());
+            cart.setUtilisateurs(user);
+            cart.setLignePaniers(new ArrayList<>());
+            return paniersRepositorie.save(cart);
+        });
+    }
+
     @Override
-    public Double calculateTotal(Long panierId) {
+    @Transactional
+    public void addForUtilisateur(Long utilisateurId, Long produitId, Integer quantite) {
+        if (quantite == null || quantite < 1 || quantite > MAX_QUANTITY) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantité autorisée : 1 à 99.");
+        }
+        Paniers cart = lockedCart(utilisateurId);
+        var product = produitsRepositorie.findById(produitId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var existing = lignePaniersRepositorie.findByPaniers_IdAndProduits_Id(cart.getId(), produitId);
+        long quantity = (long) quantite + existing.map(LignePaniers::getQuantite).orElse(0);
+        if (quantity > MAX_QUANTITY || product.getQuantite() == null || quantity > product.getQuantite()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantité indisponible ou limite de 99 dépassée.");
+        }
+        LignePaniers line = existing.orElseGet(LignePaniers::new);
+        line.setPaniers(cart);
+        line.setProduits(product);
+        line.setQuantite((int) quantity);
+        lignePaniersRepositorie.save(line);
+    }
+
+    @Override
+    @Transactional
+    public void removeForUtilisateur(Long utilisateurId, Long ligneId) {
+        Paniers cart = lockedCart(utilisateurId);
+        LignePaniers line = lignePaniersRepositorie.findByIdAndPaniers_Id(ligneId, cart.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        lignePaniersRepositorie.delete(line);
+    }
+
+    @Override
+    @Transactional
+    public void clearForUtilisateur(Long utilisateurId) {
+        Paniers cart = lockedCart(utilisateurId);
+        lignePaniersRepositorie.deleteAll(lignePaniersRepositorie.findByPaniers_Id(cart.getId()));
+    }
+
+    @Override
+    public BigDecimal calculateTotal(Long panierId) {
         Paniers panier = paniersRepositorie.findById(panierId).orElse(null);
         if (panier == null || panier.getLignePaniers() == null) {
-            return 0.0;
+            return Money.ZERO;
         }
 
-        double total = 0.0;
+        BigDecimal total = Money.ZERO;
         for (LignePaniers lp : panier.getLignePaniers()) {
             if (lp.getProduits() != null && lp.getProduits().getPrix() != null) {
-                total += lp.getProduits().getPrix() * lp.getQuantite();
+                total = total.add(lp.getProduits().getPrix().multiply(BigDecimal.valueOf(lp.getQuantite())));
             }
         }
-        return total;
+        return Money.amount(total);
     }
 
     @Override

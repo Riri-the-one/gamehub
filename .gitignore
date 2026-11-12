@@ -31,3 +31,25 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local secrets and runtime output ###
+.env
+.env.*
+!.env.example
+*.log
+/logs/
+/application-local.properties
+/application-local.yml
+/application-local.yaml
+
+### Operating system files ###
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+### Browser tools and reports ###
+/node_modules/
+playwright-report/
+test-results/
+*.dump
+*.dumpstream

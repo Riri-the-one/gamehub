@@ -71,7 +71,9 @@
 
         footer { border-top: 1px solid #27272a; background: #09090b; text-align: center; padding: 2.5rem; color: #52525b; font-size: 0.95rem; }
         footer span { color: #a855f7; font-weight: 700; font-family: 'Orbitron', sans-serif; }
+        button.btn-vider, button.del-link { font-family:inherit; cursor:pointer; } button.del-link { background:transparent; border:0; padding:0; }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 <body>
 
@@ -89,8 +91,7 @@
         <h1>Mon <span>Inventaire</span></h1>
         <p>Vérifiez vos équipements avant de valider la commande.</p>
     </div>
-    <a th:if="${panier.lignePaniers != null and !#lists.isEmpty(panier.lignePaniers)}"
-       href="/panier/vider" class="btn-vider">⚠ Vider l'inventaire</a>
+    <form th:if="${panier.lignePaniers != null and !#lists.isEmpty(panier.lignePaniers)}" th:action="@{/panier/vider}" method="post"><button type="submit" class="btn-vider">⚠ Vider l'inventaire</button></form>
 </div>
 
 <div class="content">
@@ -105,7 +106,7 @@
     <div th:if="${panier.lignePaniers != null and !#lists.isEmpty(panier.lignePaniers)}" class="cart-layout">
 
         <div class="cart-table">
-            <table>
+            <div class="table-scroll" role="region" aria-label="Tableau défilant" tabindex="0"><table>
                 <thead>
                     <tr>
                         <th>Équipement</th>
@@ -117,7 +118,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="lp : ${panier.lignePaniers}">
-                        <td>
+                        <td data-label="Équipement">
                             <div class="product-info-cell">
                                 <div class="product-icon">⌨️</div>
                                 <div>
@@ -126,15 +127,15 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="price-cell" th:text="${lp.produits.prix} + ' DH'">Prix</td>
-                        <td class="qty-cell" th:text="${lp.quantite}">Qté</td>
-                        <td class="total-cell" th:text="${lp.produits.prix * lp.quantite} + ' DH'">Total</td>
-                        <td>
-                            <a th:href="@{/panier/supprimer/{id}(id=${lp.id})}" class="del-link">Retirer</a>
+                        <td data-label="Prix Unit." class="price-cell" th:text="${lp.produits.prix} + ' DH'">Prix</td>
+                        <td data-label="Qté" class="qty-cell" th:text="${lp.quantite}">Qté</td>
+                        <td data-label="Sous-Total" class="total-cell" th:text="${lp.produits.prix * lp.quantite} + ' DH'">Total</td>
+                        <td data-label="Action">
+                            <form th:action="@{/panier/supprimer/{id}(id=${lp.id})}" method="post"><button type="submit" class="del-link">Retirer</button></form>
                         </td>
                     </tr>
                 </tbody>
-            </table>
+            </table></div>
         </div>
 
         <div class="summary-card">
@@ -159,7 +160,7 @@
 </div>
 
 <footer>
-    <p>ZAINAB & ARIJ © 2026 <span>GameHub</span> — Revendeur officiel</p></footer>
+    <p>ZAINAB & ARIJ © 2026 <span>GameHub</span> — Projet pédagogique</p></footer>
 
 </body>
 </html>

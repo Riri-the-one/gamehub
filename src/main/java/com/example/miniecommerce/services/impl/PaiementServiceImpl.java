@@ -3,9 +3,9 @@ package com.example.miniecommerce.services.impl;
 import com.example.miniecommerce.entities.Paiements;
 import com.example.miniecommerce.repositories.PaiementsRepositorie;
 import com.example.miniecommerce.services.PaiementService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 @AllArgsConstructor

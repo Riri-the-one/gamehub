@@ -3,19 +3,22 @@ package com.example.miniecommerce.services.impl;
 import com.example.miniecommerce.entities.Utilisateurs;
 import com.example.miniecommerce.enums.UtilisateurRoleEnum;
 import com.example.miniecommerce.repositories.UtilisateursRepositorie;
-import com.example.miniecommerce.services.PaniersService;
+import com.example.miniecommerce.services.Secrets;
 import com.example.miniecommerce.services.UtilisateurService;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.WebUtils;
 
 @Service
 @AllArgsConstructor
 public class UtilisateurServiceImpl implements UtilisateurService {
 
     private UtilisateursRepositorie utilisateursRepositorie;
-    private PaniersService paniersService;
+    public static final String GUEST_ID = "gamehub.guestUserId.v2";
 
     @Override
     public Utilisateurs saveUtilisateurs(Utilisateurs utilisateurs) {
@@ -47,81 +50,45 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         return utilisateursRepositorie.findAll();
     }
 
-    @Override
-    public Utilisateurs getOrCreateDefaultClient() {
-        Utilisateurs user = null;
-        List<Utilisateurs> tous = utilisateursRepositorie.findAll();
-        for (Utilisateurs u : tous) {
-            if (u.getUtilisateurRole() == UtilisateurRoleEnum.Client) {
-                user = u;
-                if ("".equals(user.getNom())) {
-                    user.setNom("");
-                    user.setPrenom("");
-                    user.setEmail("");
-                    user = utilisateursRepositorie.save(user);
-                }
-                break;
-            }
-        }
-        if (user == null) {
-            user = Utilisateurs.builder()
-                    .nom("")
-                    .prenom("")
-                    .email("")
-                    .UtilisateurRole(UtilisateurRoleEnum.Client)
-                    .build();
-            user = utilisateursRepositorie.save(user);
-        }
-        paniersService.getOrCreatePanierForUtilisateur(user.getId());
-        return user;
+    private Utilisateurs createGuestClient() {
+        // Always create a new guest; never adopt a historical customer or shared cart.
+        Utilisateurs user = new Utilisateurs();
+        user.setNom("");
+        user.setPrenom("");
+        user.setEmail("");
+        user.setUtilisateurRole(UtilisateurRoleEnum.Client);
+        return utilisateursRepositorie.save(user);
     }
 
     @Override
-    public Utilisateurs loginAdmin(String email) {
-        for (Utilisateurs u : utilisateursRepositorie.findAll()) {
-            if (u.getUtilisateurRole() == UtilisateurRoleEnum.Administrateur && u.getEmail() != null && u.getEmail().equalsIgnoreCase(email)) {
-                return u;
-            }
-        }
-        return null;
+    public Optional<Utilisateurs> recoverGuest(String token) {
+        if (token == null || !token.matches("[0-9a-f]{64}")) return Optional.empty();
+        return utilisateursRepositorie.findByGuestTokenHash(Secrets.hash(token))
+                .filter(u -> u.getUtilisateurRole() == UtilisateurRoleEnum.Client
+                        && u.getGuestTokenExpiresAt()!=null && u.getGuestTokenExpiresAt().after(new java.util.Date()));
     }
 
     @Override
-    public Utilisateurs checkAndGetCurrentUser(jakarta.servlet.http.HttpSession session) {
-        Utilisateurs user = (Utilisateurs) session.getAttribute("currentUser");
-        if (user == null) {
-            user = getOrCreateDefaultClient();
+    @Transactional
+    public void registerGuestToken(Long owner, String token) {
+        var user = utilisateursRepositorie.findLockedById(owner).orElseThrow();
+        user.setGuestTokenHash(Secrets.hash(token));
+        user.setGuestTokenExpiresAt(new java.util.Date(System.currentTimeMillis()+7L*24*60*60*1000));
+    }
+
+    @Override
+    public Utilisateurs checkAndGetCurrentUser(HttpSession session) {
+        synchronized (WebUtils.getSessionMutex(session)) {
+            Object identity = session.getAttribute(GUEST_ID);
+            Utilisateurs user = identity instanceof Long id
+                    ? utilisateursRepositorie.findById(id).orElse(null) : null;
+            if (user == null || user.getUtilisateurRole() != UtilisateurRoleEnum.Client) {
+                user = createGuestClient();
+                session.setAttribute(GUEST_ID, user.getId());
+            }
+            // Compatibility for checkout rendering; this attribute is never authoritative.
             session.setAttribute("currentUser", user);
+            return user;
         }
-        return user;
-    }
-
-    @Override
-    public boolean isAdmin(jakarta.servlet.http.HttpSession session) {
-        return session.getAttribute("isAdmin") != null;
-    }
-
-    @Override
-    public boolean authenticateAdmin(String email, String password, jakarta.servlet.http.HttpSession session) {
-        Utilisateurs admin = loginAdmin(email);
-        if (admin != null && "admin".equals(password)) {
-            session.setAttribute("isAdmin", true);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void logoutAdmin(jakarta.servlet.http.HttpSession session) {
-        session.removeAttribute("isAdmin");
-    }
-
-    @Override
-    public String handleAdminLogin(String email, String password, jakarta.servlet.http.HttpSession session, org.springframework.ui.Model model) {
-        if (authenticateAdmin(email, password, session)) {
-            return "redirect:/admin";
-        }
-        model.addAttribute("error", "Identifiant administrateur ou mot de passe incorrect !");
-        return "admin_login";
     }
 }
