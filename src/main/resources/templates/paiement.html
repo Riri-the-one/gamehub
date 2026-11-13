@@ -70,6 +70,7 @@
         footer { border-top: 1px solid #27272a; background: #09090b; text-align: center; padding: 2rem; color: #52525b; font-size: 0.9rem; }
         footer span { color: #a855f7; font-weight: 700; font-family: 'Orbitron', sans-serif; }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 <body>
 
@@ -90,7 +91,7 @@
             <div class="price-val" th:text="${commande.montant} + ' DH'">0.00 DH</div>
         </div>
 
-        <form action="/commander/payer" method="POST">
+        <form th:action="@{/commander/payer}" method="POST">
             <input type="hidden" name="commandeId" th:value="${commande.id}">
 
             <div class="form-group">
@@ -122,6 +123,7 @@
 
             <button type="submit" class="btn-pay">⚡ Confirmer et Payer</button>
         </form>
+        <form th:action="@{/commander/annuler}" method="post"><input type="hidden" name="commandeId" th:value="${commande.id}"><button class="btn-pay" type="submit">Annuler et libérer le stock</button></form>
     </div>
 </div>
 

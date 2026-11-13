@@ -1,0 +1,47 @@
+name: Java and MySQL verification
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          # Disposable CI fixtures only; not production credentials.
+          MYSQL_ROOT_PASSWORD: ci-fixture-root-only
+          MYSQL_DATABASE: gamehub_cart_tests
+          MYSQL_USER: gamehub_audit
+          MYSQL_PASSWORD: ci-fixture-application-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Prepare isolated migration fixtures
+        env:
+          MYSQL_PWD: ci-fixture-root-only
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+        run: >-
+          docker exec -e MYSQL_PWD "$MYSQL_CONTAINER" mysql -u root -e
+          "CREATE DATABASE gamehub_migration_tests; CREATE DATABASE gamehub_migration_invalid; CREATE DATABASE gamehub_migration_unmanaged;
+          GRANT ALL ON gamehub_migration_tests.* TO 'gamehub_audit'@'%';
+          GRANT ALL ON gamehub_migration_invalid.* TO 'gamehub_audit'@'%';
+          GRANT ALL ON gamehub_migration_unmanaged.* TO 'gamehub_audit'@'%';"
+      - name: Verify application and migrations
+        env:
+          GAMEHUB_TEST_MYSQL_URL: jdbc:mysql://127.0.0.1:${{ job.services.mysql.ports[3306] }}/gamehub_cart_tests?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+          GAMEHUB_TEST_MYSQL_PASSWORD: ci-fixture-application-only
+        run: sh mvnw -B verify
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-reports
+          path: target/surefire-reports/*.txt

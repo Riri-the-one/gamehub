@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GameHub — Information</title>
+<link rel="stylesheet" href="/css/responsive.css"><style>body{background:#000;color:#e4e4e7;font-family:Arial,sans-serif}a{display:inline-block;padding:1rem}</style></head>
+<body><main class="error-shell"><h1 th:text="'GameHub · ' + ${status}">GameHub</h1>
+<p th:if="${status == 404}">Cette ressource est introuvable ou ne vous appartient pas.</p>
+<p th:if="${status == 403}">Cette action n’est pas autorisée. Rechargez la page avant de réessayer.</p>
+<p th:if="${status == 400}">Vérifiez les informations saisies et les limites indiquées.</p>
+<p th:if="${status == 409}">Les données ont changé ou cette action ne correspond plus à leur état. Rechargez la page.</p>
+<p th:if="${status != 400 and status != 403 and status != 404 and status != 409}">La demande n’a pas pu être traitée. Réessayez depuis l’accueil.</p>
+<a href="/">Accueil</a><a href="/produits">Catalogue</a><a href="/panier">Panier</a></main></body></html>

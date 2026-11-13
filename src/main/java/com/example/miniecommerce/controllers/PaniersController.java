@@ -1,35 +1,34 @@
 package com.example.miniecommerce.controllers;
 
 import com.example.miniecommerce.entities.Paniers;
-import com.example.miniecommerce.entities.Utilisateurs;
-import com.example.miniecommerce.services.LignePaniersService;
+import com.example.miniecommerce.services.GuestCartService;
 import com.example.miniecommerce.services.PaniersService;
-import com.example.miniecommerce.services.UtilisateurService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
 @Controller
 @AllArgsConstructor
 public class PaniersController {
     private PaniersService paniersService;
-    private LignePaniersService lignePaniersService;
-    private UtilisateurService utilisateurService;
 
 
-    @RequestMapping("/panier")
+    private GuestCartService guestCartService;
+
+
+    @GetMapping("/panier")
     public String voirPanier(Model model, HttpSession session) {
-        Utilisateurs user = utilisateurService.checkAndGetCurrentUser(session);
-        Paniers panier = paniersService.getOrCreatePanierForUtilisateur(user.getId());
+        Paniers panier = guestCartService.view(session);
         model.addAttribute("panier", panier);
         model.addAttribute("total", paniersService.calculateTotal(panier.getId()));
         return "panier";
@@ -37,25 +36,22 @@ public class PaniersController {
 
     @PostMapping("/panier/ajouter")
     public String ajouterAuPanier(@RequestParam Long produitId,
-                                  @RequestParam(defaultValue = "1") Integer quantite,
-                                  HttpSession session) {
-        Utilisateurs user = utilisateurService.checkAndGetCurrentUser(session);
-        Paniers panier = paniersService.getOrCreatePanierForUtilisateur(user.getId());
-        lignePaniersService.addProduitToPanier(panier.getId(), produitId, quantite);
+                                  @RequestParam(required = false) Integer quantite,
+                                  HttpSession session, HttpServletRequest request) {
+        Integer quantity = request.getParameter("quantite") == null ? Integer.valueOf(1) : quantite;
+        guestCartService.add(session, produitId, quantity);
         return "redirect:/panier";
     }
 
-    @RequestMapping("/panier/supprimer/{id}")
-    public String supprimerDuPanier(@PathVariable Long id) {
-        lignePaniersService.deleteLignePaniers(id);
+    @PostMapping("/panier/supprimer/{id}")
+    public String supprimerDuPanier(@PathVariable Long id, HttpSession session) {
+        guestCartService.remove(session, id);
         return "redirect:/panier";
     }
 
-    @RequestMapping("/panier/vider")
+    @PostMapping("/panier/vider")
     public String viderPanier(HttpSession session) {
-        Utilisateurs user = utilisateurService.checkAndGetCurrentUser(session);
-        Paniers panier = paniersService.getOrCreatePanierForUtilisateur(user.getId());
-        paniersService.clearPanier(panier.getId());
+        guestCartService.clear(session);
         return "redirect:/panier";
     }
 
@@ -64,7 +60,7 @@ public class PaniersController {
         return "CreatePaniers";
     }
 
-    @RequestMapping("/savePaniers")
+    @PostMapping("/savePaniers")
     public String savePaniers(@ModelAttribute("paniers") Paniers paniers) {
         paniersService.savePaniers(paniers);
         return "CreatePaniers";
@@ -77,7 +73,7 @@ public class PaniersController {
         return "PaniersList";
     }
 
-    @RequestMapping("/deletePaniers")
+    @PostMapping("/deletePaniers")
     public String deletePaniers(@RequestParam("id") Long id, ModelMap modelMap) {
         paniersService.deletePaniers(id);
         List<Paniers> paniers = paniersService.getAllPaniers();
@@ -92,7 +88,7 @@ public class PaniersController {
         return "EditPaniers";
     }
 
-    @RequestMapping("/updatePaniers")
+    @PostMapping("/updatePaniers")
     public String updatePaniers(@ModelAttribute("paniers") Paniers paniers) {
         paniersService.updatePaniers(paniers);
         return "CreatePaniers";

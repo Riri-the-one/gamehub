@@ -58,7 +58,9 @@
 
         .img-preview { width: 60px; height: 60px; object-fit: contain; background: #000; border-radius: 4px; padding: 5px; border: 1px solid #27272a; }
         .empty { padding: 3rem; text-align: center; color: #52525b; background: #09090b; border-radius: 8px; border: 1px dashed #27272a; font-size: 1.1rem; }
+        .logout-link { background:none; border:0; cursor:pointer; font:inherit; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px; margin-left:2rem; } button.btn-danger { font:inherit; font-size:0.85rem; cursor:pointer; }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 <body>
 
@@ -69,7 +71,7 @@
         <div class="nav-links">
             <a href="/">Accéder au Store</a>
             <a href="/admin" style="color: #a855f7; font-weight: bold; text-shadow: 0 0 10px rgba(168,85,247,0.5);">System Admin</a>
-            <a href="/admin/logout" style="color: #f87171; font-weight: 600; text-shadow: 0 0 10px rgba(239,68,68,0.5);">Déconnexion ➔</a>
+            <form th:action="@{/admin/logout}" method="post" style="display:inline"><button type="submit" class="logout-link" style="color: #f87171; font-weight: 600; text-shadow: 0 0 10px rgba(239,68,68,0.5);">Déconnexion ➔</button></form>
         </div>
     </nav>
 
@@ -84,7 +86,7 @@
 
     <!-- TABLEAU DES PRODUITS -->
     <h2 class="section-title">Inventaire Matériel</h2>
-    <table th:if="${not #lists.isEmpty(produits)}">
+    <div class="table-scroll" role="region" aria-label="Tableau défilant" tabindex="0"><table th:if="${not #lists.isEmpty(produits)}">
         <thead>
             <tr>
                 <th>Visuel</th>
@@ -98,27 +100,27 @@
         </thead>
         <tbody>
             <tr th:each="p : ${produits}">
-                <td>
+                <td data-label="Visuel">
                     <img th:if="${p.image != null and p.image != ''}" th:src="@{'/images/' + ${p.image}}" class="img-preview" alt="Produit">
                     <span th:if="${p.image == null or p.image == ''}" style="color: #06b6d4;">⌨️</span>
                 </td>
-                <td th:text="${p.nom}" style="font-weight: 700; color: #fff;">Nom</td>
-                <td th:text="${p.description}">Description</td>
-                <td th:text="${p.prix} + ' DH'" style="color: #06b6d4; font-weight: 700; font-family: 'Orbitron', sans-serif;">Prix</td>
-                <td th:text="${p.quantite}">Quantité</td>
-                <td th:text="${p.categorie != null ? p.categorie.nom : 'Uncategorized'}">Catégorie</td>
-                <td>
+                <td data-label="Désignation" th:text="${p.nom}" style="font-weight: 700; color: #fff;">Nom</td>
+                <td data-label="Spécifications" th:text="${p.description}">Description</td>
+                <td data-label="Tarif" th:text="${p.prix} + ' DH'" style="color: #06b6d4; font-weight: 700; font-family: 'Orbitron', sans-serif;">Prix</td>
+                <td data-label="Stock" th:text="${p.quantite}">Quantité</td>
+                <td data-label="Catégorie" th:text="${p.categorie != null ? p.categorie.nom : 'Uncategorized'}">Catégorie</td>
+                <td data-label="Action">
                     <a th:href="@{/admin/edit-product(id=${p.id})}" class="btn btn-outline-cyan" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; margin-right: 0.5rem; text-transform: none; letter-spacing: 0;">Modifier</a>
-                    <a th:href="@{/admin/delete-product(id=${p.id})}" class="btn btn-danger" onclick="return confirm('Confirmez-vous la suppression de ce composant du système ?');">Supprimer</a>
+                    <form th:action="@{/admin/delete-product(id=${p.id})}" method="post" style="display:inline" onsubmit="return confirm('Confirmez-vous la suppression de ce composant du système ?');"><button type="submit" class="btn btn-danger">Supprimer</button></form>
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table></div>
     <div class="empty" th:if="${#lists.isEmpty(produits)}">Aucun équipement détecté dans la base de données.</div>
 
     <!-- TABLEAU DES CATÉGORIES -->
     <h2 class="section-title">Nomenclature des Catégories</h2>
-    <table th:if="${not #lists.isEmpty(categories)}">
+    <div class="table-scroll" role="region" aria-label="Tableau défilant" tabindex="0"><table th:if="${not #lists.isEmpty(categories)}">
         <thead>
             <tr>
                 <th>ID</th>
@@ -129,15 +131,15 @@
         </thead>
         <tbody>
             <tr th:each="c : ${categories}">
-                <td th:text="${c.id}" style="color: #a855f7; font-weight: 700;">ID</td>
-                <td th:text="${c.nom}" style="font-weight: 700; color: #fff;">Nom</td>
-                <td th:text="${c.description}">Description</td>
-                <td>
-                    <a th:href="@{/admin/delete-category(id=${c.id})}" class="btn btn-danger" onclick="return confirm('Confirmez-vous la destruction de cette catégorie ?');">Supprimer</a>
+                <td data-label="ID" th:text="${c.id}" style="color: #a855f7; font-weight: 700;">ID</td>
+                <td data-label="Intitulé" th:text="${c.nom}" style="font-weight: 700; color: #fff;">Nom</td>
+                <td data-label="Description" th:text="${c.description}">Description</td>
+                <td data-label="Action">
+                    <form th:action="@{/admin/delete-category(id=${c.id})}" method="post" style="display:inline" onsubmit="return confirm('Confirmez-vous la destruction de cette catégorie ?');"><button type="submit" class="btn btn-danger">Supprimer</button></form>
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table></div>
     <div class="empty" th:if="${#lists.isEmpty(categories)}">Aucune catégorie détectée dans la base de données.</div>
 </div>
 

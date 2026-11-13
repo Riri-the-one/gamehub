@@ -1,0 +1,121 @@
+# Pre-publication working-tree inventory
+
+Includes preserved changes from earlier authorized batches and finalization. Snapshot taken before staging and the authorized publication commit. This inventory excludes its own path.
+
+```text
+ M .gitignore
+ M mvnw.cmd
+ M pom.xml
+ M src/main/java/com/example/miniecommerce/MiniEcommerceApplication.java
+ M src/main/java/com/example/miniecommerce/controllers/CategoriesController.java
+ M src/main/java/com/example/miniecommerce/controllers/CommandesController.java
+ M src/main/java/com/example/miniecommerce/controllers/LigneCommandesController.java
+ M src/main/java/com/example/miniecommerce/controllers/LignePaniersController.java
+ M src/main/java/com/example/miniecommerce/controllers/PaiementsController.java
+ M src/main/java/com/example/miniecommerce/controllers/PaniersController.java
+ M src/main/java/com/example/miniecommerce/controllers/ProduitsController.java
+ M src/main/java/com/example/miniecommerce/controllers/UtilisateurController.java
+ M src/main/java/com/example/miniecommerce/entities/Categories.java
+ M src/main/java/com/example/miniecommerce/entities/Commandes.java
+ M src/main/java/com/example/miniecommerce/entities/LigneCommandes.java
+ M src/main/java/com/example/miniecommerce/entities/LignePaniers.java
+ M src/main/java/com/example/miniecommerce/entities/Paiements.java
+ M src/main/java/com/example/miniecommerce/entities/Paniers.java
+ M src/main/java/com/example/miniecommerce/entities/Produits.java
+ M src/main/java/com/example/miniecommerce/entities/Utilisateurs.java
+ M src/main/java/com/example/miniecommerce/enums/CommandeEnum.java
+ M src/main/java/com/example/miniecommerce/enums/PaiementEnum.java
+ M src/main/java/com/example/miniecommerce/enums/StatutPaiementEnum.java
+ M src/main/java/com/example/miniecommerce/enums/UtilisateurRoleEnum.java
+ M src/main/java/com/example/miniecommerce/repositories/CategoriesRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/CommandesRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/LigneCommandesRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/LignePaniersRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/PaiementsRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/PaniersRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/ProduitsRepositorie.java
+ M src/main/java/com/example/miniecommerce/repositories/UtilisateursRepositorie.java
+ M src/main/java/com/example/miniecommerce/services/CategoriesService.java
+ M src/main/java/com/example/miniecommerce/services/CommandesService.java
+ M src/main/java/com/example/miniecommerce/services/LigneCommandesService.java
+ M src/main/java/com/example/miniecommerce/services/LignePaniersService.java
+ M src/main/java/com/example/miniecommerce/services/PaiementService.java
+ M src/main/java/com/example/miniecommerce/services/PaniersService.java
+ M src/main/java/com/example/miniecommerce/services/ProduitsService.java
+ M src/main/java/com/example/miniecommerce/services/UtilisateurService.java
+ M src/main/java/com/example/miniecommerce/services/impl/CategoriesServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/CommandesServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/LigneCommandesServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/LignePaniersServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/PaiementServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/PaniersServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/ProduitsServiceImpl.java
+ M src/main/java/com/example/miniecommerce/services/impl/UtilisateurServiceImpl.java
+ M src/main/resources/application.properties
+ M src/main/resources/templates/accueil.html
+ M src/main/resources/templates/admin_add_category.html
+ M src/main/resources/templates/admin_add_product.html
+ M src/main/resources/templates/admin_dashboard.html
+ M src/main/resources/templates/admin_edit_product.html
+ M src/main/resources/templates/admin_login.html
+ M src/main/resources/templates/checkout.html
+ M src/main/resources/templates/confirmation.html
+ M src/main/resources/templates/paiement.html
+ M src/main/resources/templates/panier.html
+ M src/main/resources/templates/produits.html
+ M src/test/java/com/example/miniecommerce/MiniEcommerceApplicationTests.java
+?? .github/workflows/ci.yml
+?? README.md
+?? docs/ADMIN_SECURITY.md
+?? docs/CART_SECURITY.md
+?? docs/FINAL_REPORT.md
+?? docs/FUNCTIONAL_VALIDATION.md
+?? docs/GITHUB_PRESENTATION.md
+?? docs/MIGRATIONS.md
+?? docs/ORDER_SECURITY.md
+?? docs/TECHNICAL_REVIEW.md
+?? docs/screenshots/README.md
+?? docs/screenshots/admin-dashboard.png
+?? docs/screenshots/catalogue.png
+?? docs/screenshots/desktop/admin-dashboard.png
+?? docs/screenshots/desktop/catalogue.png
+?? docs/screenshots/desktop/home.png
+?? docs/screenshots/home.png
+?? docs/screenshots/mobile/admin-320.png
+?? docs/screenshots/mobile/admin-390.png
+?? docs/screenshots/mobile/cart-320.png
+?? docs/screenshots/mobile/cart-390.png
+?? docs/screenshots/mobile/catalogue-320.png
+?? docs/screenshots/mobile/catalogue-390.png
+?? docs/screenshots/mobile/home-320.png
+?? docs/screenshots/mobile/home-390.png
+?? docs/screenshots/product-card.png
+?? src/main/java/com/example/miniecommerce/config/GuestIdentityFilter.java
+?? src/main/java/com/example/miniecommerce/config/GuestSessionConfig.java
+?? src/main/java/com/example/miniecommerce/config/ReservationExpiryJob.java
+?? src/main/java/com/example/miniecommerce/config/SecurityConfig.java
+?? src/main/java/com/example/miniecommerce/services/CheckoutDetails.java
+?? src/main/java/com/example/miniecommerce/services/GuestCartService.java
+?? src/main/java/com/example/miniecommerce/services/GuestOrderService.java
+?? src/main/java/com/example/miniecommerce/services/Money.java
+?? src/main/java/com/example/miniecommerce/services/Secrets.java
+?? src/main/resources/db/migration/V1__legacy_baseline.sql
+?? src/main/resources/db/migration/V2__decimal_money_and_replay_protection.sql
+?? src/main/resources/db/migration/V3__guest_recovery_expiry.sql
+?? src/main/resources/static/css/responsive.css
+?? src/main/resources/templates/error.html
+?? src/test/java/com/example/miniecommerce/AdminSecurityTests.java
+?? src/test/java/com/example/miniecommerce/CartIsolationTests.java
+?? src/test/java/com/example/miniecommerce/DatabaseTestSupport.java
+?? src/test/java/com/example/miniecommerce/DisabledAdminSecurityTests.java
+?? src/test/java/com/example/miniecommerce/FinalQualityTests.java
+?? src/test/java/com/example/miniecommerce/MigrationTests.java
+?? src/test/java/com/example/miniecommerce/OrderSecurityTests.java
+?? src/test/java/com/example/miniecommerce/config/SecurityConfigTests.java
+?? src/test/resources/application-test.properties
+?? tools/EncodeDemoPassword.java
+?? tools/HashAdminPassword.java
+?? tools/Run-IsolatedBrowserChecks.ps1
+?? tools/Run-IsolatedMysqlTests.ps1
+?? tools/browser-checks.cjs
+```

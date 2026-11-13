@@ -1,8 +1,8 @@
 package com.example.miniecommerce.services;
 
 import com.example.miniecommerce.entities.LignePaniers;
-import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface LignePaniersService {
@@ -12,5 +12,4 @@ public interface LignePaniersService {
     LignePaniers getLignePaniers(Long id);
     void deleteAllLignePaniers();
     List<LignePaniers> getAllLignePaniers();
-    LignePaniers addProduitToPanier(Long panierId, Long produitId, Integer quantite);
 }

@@ -2,14 +2,14 @@ package com.example.miniecommerce.controllers;
 
 import com.example.miniecommerce.entities.LignePaniers;
 import com.example.miniecommerce.services.LignePaniersService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -21,7 +21,7 @@ public class LignePaniersController {
         return "CreateLignePaniers";
     }
 
-    @RequestMapping("/saveLignePaniers")
+    @PostMapping("/saveLignePaniers")
     public String saveLignePaniers(@ModelAttribute("lignePaniers") LignePaniers lignePaniers) {
         lignePaniersService.saveLignePaniers(lignePaniers);
         return "CreateLignePaniers";
@@ -34,7 +34,7 @@ public class LignePaniersController {
         return "LignePaniersList";
     }
 
-    @RequestMapping("/deleteLignePaniers")
+    @PostMapping("/deleteLignePaniers")
     public String deleteLignePaniers(@RequestParam("id") Long id, ModelMap modelMap) {
         lignePaniersService.deleteLignePaniers(id);
         List<LignePaniers> lignePaniers = lignePaniersService.getAllLignePaniers();
@@ -49,7 +49,7 @@ public class LignePaniersController {
         return "EditLignePaniers";
     }
 
-    @RequestMapping("/updateLignePaniers")
+    @PostMapping("/updateLignePaniers")
     public String updateLignePaniers(@ModelAttribute("lignePaniers") LignePaniers lignePaniers) {
         lignePaniersService.updateLignePaniers(lignePaniers);
         return "CreateLignePaniers";

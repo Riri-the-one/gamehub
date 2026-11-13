@@ -1,8 +1,9 @@
 package com.example.miniecommerce.services;
 
 import com.example.miniecommerce.entities.Paniers;
-import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface PaniersService {
@@ -13,6 +14,9 @@ public interface PaniersService {
     void deleteAllPaniers();
     List<Paniers> getAllPaniers();
     Paniers getOrCreatePanierForUtilisateur(Long utilisateurId);
-    Double calculateTotal(Long panierId);
+    BigDecimal calculateTotal(Long panierId);
     void clearPanier(Long panierId);
+    void addForUtilisateur(Long utilisateurId, Long produitId, Integer quantite);
+    void removeForUtilisateur(Long utilisateurId, Long ligneId);
+    void clearForUtilisateur(Long utilisateurId);
 }
